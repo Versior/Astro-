@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
 	// Meta property, found in src/components/BaseHead.astro L:42
 	ogLocale: "zh-CN",
 	// Used to construct the meta title property found in src/components/BaseHead.astro L:11, and webmanifest name found in astro.config.ts L:42
-	title: "落叶下的贰伍秋",
+	title: "多云禁止悲观 | 2025秋-Versior",
 };
 
 // Used to generate links in both the Header & Footer.
