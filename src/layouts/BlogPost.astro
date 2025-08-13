@@ -35,11 +35,10 @@ const { headings } = await render(post);
 			>
 				<slot />
 				<WebMentions />
-				<!-- 替换评论系统为Utterances -->
-				<div class="mt-12 border-t border-gray-200 pt-6 dark:border-gray-700">
-					<h2 class="mb-4 text-lg font-semibold">评论</h2>
-					<UtterancesComments />
-				</div>
+					<!-- 替换评论系统为Utterances -->
+	<div class="mt-12 border-t border-gray-200 pt-6 dark:border-gray-700">
+		<UtterancesComments />
+	</div>
 			</div>
 		</article>
 	</div>
