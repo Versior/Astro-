@@ -3,9 +3,9 @@
 	import ThemeToggle from "@/components/ThemeToggle.astro";
 	import { menuLinks } from "@/site.config";
 	---
-	<header class="group relative mb-16 flex flex-col items-center w-full max-w-none px-4 sm:ps-[4.5rem] sm:pr-4" id="main-header">
-		<!-- 搜索和主题切换按钮 - 右上角，调整位置避免叠加 -->
-		<div class="absolute top-4 right-4 flex items-center gap-2 z-10">
+	<header class="group relative mb-10 flex flex-col items-center w-full max-w-none px-4 sm:ps-[4.5rem] sm:pr-4" id="main-header">
+		<!-- 搜索和主题切换按钮 - 右上顶角 -->
+		<div class="absolute top-0 right-0 flex items-center gap-2 p-3 z-50">
 			<Search />
 			<ThemeToggle />
 			<mobile-button>
@@ -13,7 +13,7 @@
 					aria-expanded="false"
 					aria-haspopup="menu"
 					aria-label="Open main menu"
-					class="group relative ms-4 h-7 w-7 sm:invisible sm:hidden"
+					class="group relative ms-2 h-7 w-7 sm:invisible sm:hidden"
 					id="toggle-navigation-menu"
 					type="button"
 				>
@@ -48,8 +48,8 @@
 			</mobile-button>
 		</div>
 		<!-- 移动端和桌面端：标题和导航菜单容器 -->
-		<div class="flex flex-col items-center w-full pt-10 sm:pt-0">
-			<!-- 标题 - 调整字体大小 -->
+		<div class="flex flex-col items-center w-full pt-6 sm:pt-0">
+			<!-- 标题 -->
 			<a
 				aria-current={Astro.url.pathname === "/" ? "page" : false}
 				class="inline-flex items-center hover:filter-none mb-3 sm:mb-4"
@@ -60,7 +60,7 @@
 					<span class="text-base sm:text-lg font-medium">-离线崩溃日志</span>
 				</span>
 			</a>
-			<!-- 导航菜单 - 调整字体大小 -->
+			<!-- 导航菜单 -->
 			<nav
 				aria-label="Main menu"
 				class="flex flex-row items-center gap-x-4 sm:gap-x-6 text-accent w-full justify-center"
