@@ -1,28 +1,48 @@
----
-// GitalkComments.astro
----
-<div id="gitalk-container"></div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-<script is:inline>
-	document.addEventListener('DOMContentLoaded', () => {
-		const gitalk = new Gitalk({
-			clientID: 'Ov23ctGj3UmX5XknPxVT',
-			clientSecret: '669c5e6e7bdd6e1adec5331ab82c779f2774dfee',
-			repo: 'Astro-',  // 修正：只需要仓库名称，不是完整URL
-			owner: 'Versior',
-			admin: ['Versior'],
-			id: location.pathname,      // 页面唯一标识
-			distractionFreeMode: false,  // 类似Facebook评论框的全屏遮罩效果
-			// 添加以下参数以提高兼容性
-			createIssueManually: true,   // 如果GitHub仓库中没有issue，自动创建
-			flipMoveOptions: {
-				staggerDelayBy: 150,
-				appearAnimation: 'accordionVertical',
-				enterAnimation: 'accordionVertical',
-				leaveAnimation: 'accordionVertical',
+	---
+	// GitalkComments.astro
+	---
+	<div id="gitalk-container"></div>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', () => {
+			console.log('开始初始化Gitalk评论系统');
+			const gitalk = new Gitalk({
+				clientID: 'Ov23ctGj3UmX5XknPxVT',
+				clientSecret: '669c5e6e7bdd6e1adec5331ab82c779f2774dfee',
+				repo: 'Astro-',
+				owner: 'Versior',
+				admin: ['Versior'],
+				id: location.pathname,      // 页面唯一标识
+				distractionFreeMode: false,
+				// 添加以下参数以解决问题
+				createIssueManually: true,   // 如果没有issue，自动创建
+				flipMoveOptions: {
+					staggerDelayBy: 150,
+					appearAnimation: 'accordionVertical',
+					enterAnimation: 'accordionVertical',
+					leaveAnimation: 'accordionVertical',
+				},
+				// 添加语言设置
+				language: 'zh-CN',
+				// 添加每页显示评论数量
+				pagerDirection: 'first',
+				// 添加代理服务器（如果需要）
+				// proxy: 'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token'
+			})
+			console.log('Gitalk配置:', gitalk);
+			try {
+				gitalk.render('gitalk-container');
+				console.log('Gitalk渲染完成');
+			} catch (error) {
+				console.error('Gitalk渲染失败:', error);
+				// 显示错误信息给用户
+				const container = document.getElementById('gitalk-container');
+				container.innerHTML = `
+					<div style="color: red; padding: 10px; border: 1px solid #ffdddd; background-color: #fff0f0; border-radius: 4px;">
+						评论系统加载失败，请刷新页面重试或联系网站管理员。
+					</div>
+				`;
 			}
 		})
-		gitalk.render('gitalk-container')
-	})
-</script>
+	</script>
