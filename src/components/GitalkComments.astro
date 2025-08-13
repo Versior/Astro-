@@ -1,20 +1,28 @@
-	---
-	// GitalkComments.astro
-	---
-	<div id="gitalk-container"></div>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-	<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-	<script is:inline>
-		document.addEventListener('DOMContentLoaded', () => {
-			const gitalk = new Gitalk({
-				clientID: 'Ov23ctGj3UmX5XknPxVT',
-				clientSecret: '669c5e6e7bdd6e1adec5331ab82c779f2774dfee',
-				repo: 'https://github.com/Versior/Astro-',
-				owner: 'Versior',
-				admin: ['Versior'],
-				id: location.pathname,      // 页面唯一标识
-				distractionFreeMode: false  // 类似Facebook评论框的全屏遮罩效果
-			})
-			gitalk.render('gitalk-container')
+---
+// GitalkComments.astro
+---
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const gitalk = new Gitalk({
+			clientID: 'Ov23ctGj3UmX5XknPxVT',
+			clientSecret: '669c5e6e7bdd6e1adec5331ab82c779f2774dfee',
+			repo: 'Astro-',  // 修正：只需要仓库名称，不是完整URL
+			owner: 'Versior',
+			admin: ['Versior'],
+			id: location.pathname,      // 页面唯一标识
+			distractionFreeMode: false,  // 类似Facebook评论框的全屏遮罩效果
+			// 添加以下参数以提高兼容性
+			createIssueManually: true,   // 如果GitHub仓库中没有issue，自动创建
+			flipMoveOptions: {
+				staggerDelayBy: 150,
+				appearAnimation: 'accordionVertical',
+				enterAnimation: 'accordionVertical',
+				leaveAnimation: 'accordionVertical',
+			}
 		})
-	</script>
+		gitalk.render('gitalk-container')
+	})
+</script>
