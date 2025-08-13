@@ -1,21 +1,18 @@
----
-import { menuLinks, siteConfig, friends } from "@/site.config";
-
-
----
-
+	---
+	import { menuLinks, siteConfig, friends } from "@/site.config";
+	---
 	<footer
-		class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 pb-4 pt-20 text-center align-top font-semibold text-gray-600 dark:text-gray-400"
+		class="mt-auto flex w-full flex-col items-center justify-center gap-y-1 pb-4 pt-10 text-center align-top font-semibold text-gray-600 dark:text-gray-400"
 	>
-		<div class="flex flex-col w-full gap-y-2">
+		<div class="flex flex-col w-full gap-y-1">
 			<div class="text-center text-[9px]">
 				&copy; {siteConfig.author}
 			</div>
-			<div class="uptime-section text-center py-2 text-[9px]">
+			<div class="uptime-section text-center text-[9px]">
 				本站已运行: <span id="uptime">0秒</span>
 			</div>
 			<!-- 添加不蒜子访问统计 -->
-			<div class="text-center py-2 text-[9px]">
+			<div class="text-center text-[9px]">
 				<span id="busuanzi_container_site_uv">
 					访客数:<span id="busuanzi_value_site_uv"></span>人次
 				</span> | 
@@ -26,7 +23,7 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
 		</div>
 		<nav
 			aria-label="More on this site"
-			class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500"
+			class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500 mt-1"
 		>
 			{
 				friends.map((link) => (
