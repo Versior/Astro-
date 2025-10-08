@@ -1,99 +1,54 @@
-	---
-	import Search from "@/components/Search.astro";
-	import ThemeToggle from "@/components/ThemeToggle.astro";
-	import { menuLinks } from "@/site.config";
-	---
-	<header class="group relative mb-10 flex flex-col items-center w-full max-w-none px-4 sm:ps-[4.5rem] sm:pr-4" id="main-header">
-		<!-- 搜索和主题切换按钮 - 右上顶角 -->
-		<div class="absolute top-0 right-0 flex items-center gap-2 p-3 z-50">
-			<Search />
-			<ThemeToggle />
-			<mobile-button>
-				<button
-					aria-expanded="false"
-					aria-haspopup="menu"
-					aria-label="Open main menu"
-					class="group relative ms-2 h-7 w-7 sm:invisible sm:hidden"
-					id="toggle-navigation-menu"
-					type="button"
-				>
-					<svg
-						aria-hidden="true"
-						class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 transition-all group-aria-expanded:scale-0 group-aria-expanded:opacity-0"
-						fill="none"
-						focusable="false"
-						id="line-svg"
-						stroke="currentColor"
-						stroke-width="1.5"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
+---
+import { menuLinks } from "@/site.config";
+---
+<header class="group relative mb-10 flex flex-col items-center w-full max-w-none px-4 sm:ps-[4.5rem] sm:pr-4" id="main-header">
+	<!-- 移动端和桌面端：标题和导航菜单容器 -->
+	<div class="flex flex-col items-center w-full pt-6 sm:pt-0">
+		<!-- 标题 -->
+		<a
+			aria-current={Astro.url.pathname === "/" ? "page" : false}
+			class="inline-flex items-center hover:filter-none mb-3 sm:mb-4"
+			href="/"
+		>
+			<span class="text-xl sm:text-2xl font-bold flex items-center whitespace-nowrap">
+				<span class="text-accent">VERSIOR</span> 
+				<span class="text-base sm:text-lg font-medium">-离线崩溃日志</span>
+			</span>
+		</a>
+		<!-- 导航菜单 -->
+		<nav
+			aria-label="Main menu"
+			class="flex flex-row items-center gap-x-4 sm:gap-x-6 text-accent w-full justify-center"
+			id="navigation-menu"
+		>
+			{
+				menuLinks.map((link) => (
+					<a
+						aria-current={Astro.url.pathname === link.path ? "page" : false}
+						class="text-base sm:text-lg font-medium py-2 sm:py-0 px-2 sm:px-3 underline-offset-2 hover:underline"
+						data-astro-prefetch
+						href={link.path}
 					>
-						<path d="M3.75 9h16.5m-16.5 6.75h16.5" stroke-linecap="round" stroke-linejoin="round"></path>
-					</svg>
-					<svg
-						aria-hidden="true"
-						class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
-						class="text-accent"
-						fill="none"
-						focusable="false"
-						id="cross-svg"
-						stroke="currentColor"
-						stroke-width="1.5"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
-					</svg>
-				</button>
-			</mobile-button>
-		</div>
-		<!-- 移动端和桌面端：标题和导航菜单容器 -->
-		<div class="flex flex-col items-center w-full pt-6 sm:pt-0">
-			<!-- 标题 -->
-			<a
-				aria-current={Astro.url.pathname === "/" ? "page" : false}
-				class="inline-flex items-center hover:filter-none mb-3 sm:mb-4"
-				href="/"
-			>
-				<span class="text-xl sm:text-2xl font-bold flex items-center whitespace-nowrap">
-					<span class="text-accent">VERSIOR</span> 
-					<span class="text-base sm:text-lg font-medium">-离线崩溃日志</span>
-				</span>
-			</a>
-			<!-- 导航菜单 -->
-			<nav
-				aria-label="Main menu"
-				class="flex flex-row items-center gap-x-4 sm:gap-x-6 text-accent w-full justify-center"
-				id="navigation-menu"
-			>
-				{
-					menuLinks.map((link) => (
-						<a
-							aria-current={Astro.url.pathname === link.path ? "page" : false}
-							class="text-base sm:text-lg font-medium py-2 sm:py-0 px-2 sm:px-3 underline-offset-2 hover:underline"
-							data-astro-prefetch
-							href={link.path}
-						>
-							{link.title}
-						</a>
-					))
-				}
-			</nav>
-		</div> 
-	</header>
-	<script>
-		import { toggleClass } from "@/utils/domElement";
-		class MobileNavBtn extends HTMLElement {
-			#menuOpen: boolean = false;
-			connectedCallback() {
-				const headerEl = document.getElementById("main-header")!;
-				const mobileButtonEl = this.querySelector<HTMLButtonElement>("button");
-				mobileButtonEl?.addEventListener("click", () => {
-					if (headerEl) toggleClass(headerEl, "menu-open");
-					this.#menuOpen = !this.#menuOpen;
-					mobileButtonEl.setAttribute("aria-expanded", this.#menuOpen.toString());
-				});
+						{link.title}
+					</a>
+				))
 			}
+		</nav>
+	</div> 
+</header>
+<script>
+	import { toggleClass } from "@/utils/domElement";
+	class MobileNavBtn extends HTMLElement {
+		#menuOpen: boolean = false;
+		connectedCallback() {
+			const headerEl = document.getElementById("main-header")!;
+			const mobileButtonEl = this.querySelector<HTMLButtonElement>("button");
+			mobileButtonEl?.addEventListener("click", () => {
+				if (headerEl) toggleClass(headerEl, "menu-open");
+				this.#menuOpen = !this.#menuOpen;
+				mobileButtonEl.setAttribute("aria-expanded", this.#menuOpen.toString());
+			});
 		}
-		customElements.define("mobile-button", MobileNavBtn);
-	</script>
+	}
+	customElements.define("mobile-button", MobileNavBtn);
+</script>
