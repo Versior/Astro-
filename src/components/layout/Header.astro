@@ -3,12 +3,11 @@ import { menuLinks } from "@/site.config";
 ---
 <header class="group relative mb-10 flex flex-col items-center w-full max-w-none px-4 sm:ps-[4.5rem] sm:pr-4" id="main-header">
 	<!-- 移动端和桌面端：标题和导航菜单容器 -->
-	<!-- 将 pt-6 删除，使顶部不留空 -->
 	<div class="flex flex-col items-center w-full sm:pt-0">
-		<!-- 标题 -->
+		<!-- 标题 - 添加了方框样式 -->
 		<a
 			aria-current={Astro.url.pathname === "/" ? "page" : false}
-			class="inline-flex items-center hover:filter-none mb-3 sm:mb-4"
+			class="inline-flex items-center hover:filter-none mb-3 sm:mb-4 border border-accent px-4 py-2"
 			href="/"
 		>
 			<span class="text-xl sm:text-2xl font-bold flex items-center whitespace-nowrap">
