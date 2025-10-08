@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* 主题变量保留 */
+  /* 主题变量配置 */
   :root,
   :root[data-theme="light"] {
     color-scheme: light;
@@ -25,56 +25,66 @@
     --theme-quote: 102deg 100% 86%;
   }
 
-  /* 最外层根容器强制全屏居中 */
-  html {
-    width: 100% !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent;
+  /* 基础全屏样式（保留背景全屏效果） */
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 
-  /* body作为背景图容器，强制全屏无偏移 */
   body {
-    width: 100% !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
-
-    /* 背景图强制居中全屏 */
-    background-image: url('/assets/images/bg-image.jpg'); /* 注意路径是否正确（之前可能多了s？） */
-    background-size: cover !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-    position: relative !important;
+    background-image: url('/assets/images/bg-image.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
   }
 
-  /* 毛玻璃遮罩全屏覆盖 */
+  /* 毛玻璃效果调淡（核心修改：降低透明度） */
   body::before {
     content: '';
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    z-index: -1 !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    background-color: rgba(255, 255, 255, 0.6) !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    backdrop-filter: blur(8px); /* 模糊度降低，更通透 */
+    -webkit-backdrop-filter: blur(8px);
   }
 
+  /* 浅色模式：毛玻璃更淡（透明度从0.6→0.4） */
+  :root, :root[data-theme="light"] body::before {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* 深色模式：毛玻璃更淡（透明度从0.6→0.4） */
   :root[data-theme="dark"] body::before {
-    background-color: rgba(20, 20, 20, 0.6) !important;
+    background-color: rgba(20, 20, 20, 0.4);
   }
-}
 
-/* 关键：给所有内容容器添加居中样式（优先级最高） */
-.astro-container, #__astro, .page-wrapper {
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important; /* 强制子元素水平居中 */
-  margin: 0 auto !important;
+  /* 主体内容强制居中（核心新增） */
+  /* 匹配Astro默认生成的根容器 */
+  #__astro, .astro-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 子元素水平居中 */
+  }
+
+  /* 文章列表等核心内容容器居中 */
+  main, .content-wrapper {
+    max-width: 4xl; /* 限制内容宽度，避免过宽 */
+    width: 100%; /* 在小屏幕上占满宽度 */
+    margin: 0 auto; /* 水平居中 */
+    padding: 0 1rem; /* 左右留边距，避免贴边 */
+  }
+
+  /* 导航栏也居中 */
+  header > div {
+    margin: 0 auto; /* 确保头部内容容器居中 */
+  }
 }
