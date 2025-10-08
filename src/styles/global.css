@@ -3,25 +3,82 @@
 @tailwind utilities;
 
 @layer base {
-	:root,
-	:root[data-theme="light"] {
-		color-scheme: light;
-		/* https://tailwindcss.com/docs/customizing-colors#using-css-variables */
-		--theme-bg: 0deg 0% 98%;
-		--theme-link: 172deg 18% 41%;
-		--theme-text: 203deg 11% 15%;
-		--theme-accent: 351deg 66% 48%;
-		--theme-accent-2: 0deg 0% 7%;
-		--theme-quote: 351deg 66% 48%;
-	}
+  /* 主题变量配置 */
+  :root,
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --theme-bg: 0deg 0% 98%;
+    --theme-link: 172deg 18% 41%;
+    --theme-text: 203deg 11% 15%;
+    --theme-accent: 351deg 66% 48%;
+    --theme-accent-2: 0deg 0% 7%;
+    --theme-quote: 351deg 66% 48%;
+  }
 
-	:root[data-theme="dark"] {
-		color-scheme: dark;
-		--theme-bg: 210deg 6% 12%;
-		--theme-link: 330deg 49% 67%;
-		--theme-text: 220deg 3% 79%;
-		--theme-accent: 159deg 64% 45%;
-		--theme-accent-2: 0deg 0% 93%;
-		--theme-quote: 102deg 100% 86%;
-	}
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --theme-bg: 210deg 6% 12%;
+    --theme-link: 330deg 49% 67%;
+    --theme-text: 220deg 3% 79%;
+    --theme-accent: 159deg 64% 45%;
+    --theme-accent-2: 0deg 0% 93%;
+    --theme-quote: 102deg 100% 86%;
+  }
+
+  /* 1. 确保根元素和body完全占满屏幕，且无背景色遮挡 */
+  html {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    background: transparent; /* 关键：取消html默认白色背景 */
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0 !important; /* 强制取消默认margin */
+    padding: 0 !important; /* 强制取消默认padding */
+    background-image: url('/assets/images/bg-image.jpg');
+    background-size: cover; /* 覆盖全屏 */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    background-color: transparent; /* 确保body无背景色 */
+  }
+
+  /* 2. 毛玻璃遮罩层（覆盖全屏，包括两侧） */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* 视口宽度，确保两侧都覆盖 */
+    height: 100vh; /* 视口高度 */
+    z-index: -1;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* 浅色/深色模式遮罩 */
+  :root, :root[data-theme="light"] body::before {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+
+  :root[data-theme="dark"] body::before {
+    background-color: rgba(20, 20, 20, 0.6);
+  }
+
+  /* 3. 修复内容容器：取消白色背景，避免遮挡两侧 */
+  main, .container { /* 确保覆盖所有内容容器类名 */
+    max-width: 4xl; /* 保持内容居中宽度 */
+    margin: 0 auto; /* 居中 */
+    padding: 2rem 1rem;
+    background: transparent !important; /* 关键：取消容器白色背景 */
+    /* 如果需要内容区有背景，用半透明（不遮挡整体背景）：
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    */
+  }
 }
