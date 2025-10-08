@@ -25,25 +25,27 @@
     --theme-quote: 102deg 100% 86%;
   }
 
-  /* 背景图片及基础样式 */
-  html {
+  /* 关键：强制根元素和body占满全屏 */
+  html, body {
+    width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* 防止横向滚动条 */
   }
 
   body {
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    /* 背景图片配置（路径已确认正确） */
+    /* 背景图全屏配置 */
     background-image: url('/assets/images/bg-image.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-size: cover; /* 覆盖全屏，可能裁剪边缘但保证填满 */
+    /* 备选方案：background-size: 100% 100%; 拉伸图片填满，可能变形 */
+    background-position: center center; /* 图片始终居中 */
+    background-repeat: no-repeat; /* 禁止重复 */
+    background-attachment: fixed; /* 固定背景，滚动时不移动 */
     position: relative;
   }
 
-  /* 背景遮罩层（提升文字可读性） */
+  /* 背景遮罩层 */
   body::before {
     content: '';
     position: fixed;
@@ -51,15 +53,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /* 确保在内容下方 */
+    z-index: -1;
   }
 
-  /* 浅色模式遮罩 */
   :root, :root[data-theme="light"] body::before {
-    background-color: rgba(255, 255, 255, 0.7); /* 轻微透明，保留背景图可见性 */
+    background-color: rgba(255, 255, 255, 0.7);
   }
 
-  /* 深色模式遮罩 */
   :root[data-theme="dark"] body::before {
     background-color: rgba(15, 15, 15, 0.7);
   }
