@@ -3,88 +3,25 @@
 @tailwind utilities;
 
 @layer base {
-  /* 主题变量配置 */
-  :root,
-  :root[data-theme="light"] {
-    color-scheme: light;
-    --theme-bg: 0deg 0% 98%;
-    --theme-link: 172deg 18% 41%;
-    --theme-text: 203deg 11% 15%;
-    --theme-accent: 351deg 66% 48%;
-    --theme-accent-2: 0deg 0% 7%;
-    --theme-quote: 351deg 66% 48%;
-  }
+	:root,
+	:root[data-theme="light"] {
+		color-scheme: light;
+		/* https://tailwindcss.com/docs/customizing-colors#using-css-variables */
+		--theme-bg: 0deg 0% 98%;
+		--theme-link: 172deg 18% 41%;
+		--theme-text: 203deg 11% 15%;
+		--theme-accent: 351deg 66% 48%;
+		--theme-accent-2: 0deg 0% 7%;
+		--theme-quote: 351deg 66% 48%;
+	}
 
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --theme-bg: 210deg 6% 12%;
-    --theme-link: 330deg 49% 67%;
-    --theme-text: 220deg 3% 79%;
-    --theme-accent: 159deg 64% 45%;
-    --theme-accent-2: 0deg 0% 93%;
-    --theme-quote: 102deg 100% 86%;
-  }
-
-  /* 基础全屏样式（保留背景全屏效果） */
-  html, body {
-    width: 100%;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  body {
-    background-image: url('/assets/images/bg-image.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    position: relative;
-  }
-
-  /* 毛玻璃效果调淡（核心修改：降低透明度） */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    backdrop-filter: blur(8px); /* 模糊度降低，更通透 */
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  /* 浅色模式：毛玻璃更淡（透明度从0.6→0.4） */
-  :root, :root[data-theme="light"] body::before {
-    background-color: rgba(255, 255, 255, 0.4);
-  }
-
-  /* 深色模式：毛玻璃更淡（透明度从0.6→0.4） */
-  :root[data-theme="dark"] body::before {
-    background-color: rgba(20, 20, 20, 0.4);
-  }
-
-  /* 主体内容强制居中（核心新增） */
-  /* 匹配Astro默认生成的根容器 */
-  #__astro, .astro-page {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 子元素水平居中 */
-  }
-
-  /* 文章列表等核心内容容器居中 */
-  main, .content-wrapper {
-    max-width: 4xl; /* 限制内容宽度，避免过宽 */
-    width: 100%; /* 在小屏幕上占满宽度 */
-    margin: 0 auto; /* 水平居中 */
-    padding: 0 1rem; /* 左右留边距，避免贴边 */
-  }
-
-  /* 导航栏也居中 */
-  header > div {
-    margin: 0 auto; /* 确保头部内容容器居中 */
-  }
+	:root[data-theme="dark"] {
+		color-scheme: dark;
+		--theme-bg: 210deg 6% 12%;
+		--theme-link: 330deg 49% 67%;
+		--theme-text: 220deg 3% 79%;
+		--theme-accent: 159deg 64% 45%;
+		--theme-accent-2: 0deg 0% 93%;
+		--theme-quote: 102deg 100% 86%;
+	}
 }
