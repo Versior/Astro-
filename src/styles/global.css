@@ -3,59 +3,64 @@
 @tailwind utilities;
 
 @layer base {
-	:root,
-	:root[data-theme="light"] {
-		color-scheme: light;
-		--theme-bg: 0deg 0% 98%;
-		--theme-link: 172deg 18% 41%;
-		--theme-text: 203deg 11% 15%;
-		--theme-accent: 351deg 66% 48%;
-		--theme-accent-2: 0deg 0% 7%;
-		--theme-quote: 351deg 66% 48%;
-	}
+  /* 主题变量配置 */
+  :root,
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --theme-bg: 0deg 0% 98%;
+    --theme-link: 172deg 18% 41%;
+    --theme-text: 203deg 11% 15%;
+    --theme-accent: 351deg 66% 48%;
+    --theme-accent-2: 0deg 0% 7%;
+    --theme-quote: 351deg 66% 48%;
+  }
 
-	:root[data-theme="dark"] {
-		color-scheme: dark;
-		--theme-bg: 210deg 6% 12%;
-		--theme-link: 330deg 49% 67%;
-		--theme-text: 220deg 3% 79%;
-		--theme-accent: 159deg 64% 45%;
-		--theme-accent-2: 0deg 0% 93%;
-		--theme-quote: 102deg 100% 86%;
-	}
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --theme-bg: 210deg 6% 12%;
+    --theme-link: 330deg 49% 67%;
+    --theme-text: 220deg 3% 79%;
+    --theme-accent: 159deg 64% 45%;
+    --theme-accent-2: 0deg 0% 93%;
+    --theme-quote: 102deg 100% 86%;
+  }
 
-	/* 背景图片及叠加效果配置 */
-	body {
-		/* 引入背景图片 */
-		background-image: url('/assets/images/bg-image.jpg');
-		background-size: cover;
-		background-attachment: fixed;
-		background-position: center;
-		background-repeat: no-repeat;
-		position: relative; /* 用于遮罩层定位 */
-	}
+  /* 背景图片及基础样式 */
+  html {
+    height: 100%;
+  }
 
-	/* 浅色模式遮罩（半透明白色） */
-	:root, :root[data-theme="light"] body::before {
-		content: '';
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(255, 255, 255, 0.8); /* 透明度 80% 的白色遮罩 */
-		z-index: -1; /* 确保遮罩在内容下方 */
-	}
+  body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    /* 背景图片配置（路径已确认正确） */
+    background-image: url('/assets/images/bg-image.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+  }
 
-	/* 深色模式遮罩（半透明黑色） */
-	:root[data-theme="dark"] body::before {
-		content: '';
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(15, 15, 15, 0.8); /* 透明度 80% 的黑色遮罩 */
-		z-index: -1;
-	}
+  /* 背景遮罩层（提升文字可读性） */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 确保在内容下方 */
+  }
+
+  /* 浅色模式遮罩 */
+  :root, :root[data-theme="light"] body::before {
+    background-color: rgba(255, 255, 255, 0.7); /* 轻微透明，保留背景图可见性 */
+  }
+
+  /* 深色模式遮罩 */
+  :root[data-theme="dark"] body::before {
+    background-color: rgba(15, 15, 15, 0.7);
+  }
 }
