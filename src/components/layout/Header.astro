@@ -2,28 +2,14 @@
 import { menuLinks } from "@/site.config";
 ---
 <!-- 
-  1. 优化了整体布局和间距 (padding/margin)
-  2. 移除了不必要的 `relative` 和 `group` 类
-  3. 添加了 `w-full max-w-7xl mx-auto` 来限制最大宽度并居中
-  4. 添加了 `shadow-sm` 增加了一点立体感
-  5. 为了视觉效果，将 mb-10 (下方间距) 调整为 mb-8
+  1. 将 py-3 sm:py-4 修改为 pb-3 sm:pb-4，只保留底部内边距
 -->
-<header class="w-full px-4 py-6 sm:py-8 mb-8 shadow-sm">
+<header class="w-full px-4 pb-3 sm:pb-4 mb-8 shadow-sm">
   <div class="max-w-7xl mx-auto flex flex-col items-center">
-    <!-- 
-      标题区域 (Logo) - 核心优化点
-      1. 添加了 `bg-accent/5` 创建一个非常浅的背景色，突出标题
-      2. 添加了 `hover:bg-accent/10` 悬停时背景色加深，提供反馈
-      3. 添加了 `border border-accent/15` 创建一个非常淡的边框
-      4. 添加了 `rounded-lg` 圆角，使样式更现代
-      5. 添加了 `px-6 py-3` 增加了内边距，让标题呼吸
-      6. 添加了 `transition-all duration-300` 让所有悬停变化都平滑过渡
-      7. 添加了 `shadow-sm hover:shadow` 悬停时增加阴影，提升层次感
-      8. 调整了 `mb-6` (下方间距)，与导航菜单拉开距离
-    -->
+    <!-- 标题区域 (Logo) -->
     <a
       aria-current={Astro.url.pathname === "/" ? "page" : false}
-      class="inline-flex items-center mb-6 bg-accent/5 hover:bg-accent/10 border border-accent/15 rounded-lg px-6 py-3 transition-all duration-300 shadow-sm hover:shadow"
+      class="inline-flex items-center mt-0 mb-6 bg-accent/5 hover:bg-accent/10 border border-accent/15 rounded-lg px-6 py-3 transition-all duration-300 shadow-sm hover:shadow"
       href="/"
     >
       <span class="text-2xl sm:text-3xl font-bold flex items-center whitespace-nowrap">
@@ -33,12 +19,7 @@ import { menuLinks } from "@/site.config";
       </span>
     </a>
 
-    <!-- 
-      导航菜单 - 优化点
-      1. 移除了不必要的 `w-full justify-center`，因为父容器已经居中
-      2. 调整了间距 `gap-x-6 sm:gap-x-8`
-      3. 为链接添加了更精致的悬停效果
-    -->
+    <!-- 导航菜单 -->
     <nav aria-label="Main menu" class="flex flex-wrap justify-center gap-x-6 sm:gap-x-8">
       {
         menuLinks.map((link) => (
@@ -57,7 +38,7 @@ import { menuLinks } from "@/site.config";
   </div>
 </header>
 
-<!-- 移动端菜单按钮和脚本保持不变，因为我们没有修改这部分功能 -->
+<!-- 移动端菜单按钮和脚本保持不变 -->
 <script>
 	import { toggleClass } from "@/utils/domElement";
 	class MobileNavBtn extends HTMLElement {
