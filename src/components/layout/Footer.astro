@@ -1,61 +1,120 @@
-	---
-	import { menuLinks, siteConfig, friends } from "@/site.config";
-	---
-	<footer
-		class="mt-auto flex w-full flex-col items-center justify-center gap-y-1 pb-4 pt-10 text-center align-top font-semibold text-gray-600 dark:text-gray-400"
-	>
-		<div class="flex flex-col w-full gap-y-1">
-			<div class="text-center text-[9px]">
-				&copy; {siteConfig.author}
-			</div>
-			<div class="uptime-section text-center text-[9px]">
-				本站已运行: <span id="uptime">0秒</span>
-			</div>
-			<!-- 添加不蒜子访问统计 -->
-			<div class="text-center text-[9px]">
-				<span id="busuanzi_container_site_uv">
-					访客数:<span id="busuanzi_value_site_uv"></span>人次
-				</span> | 
-				<span id="busuanzi_container_site_pv">
-					总访问量:<span id="busuanzi_value_site_pv"></span>次
-				</span>
-			</div>
-		</div>
-		<nav
-			aria-label="More on this site"
-			class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500 mt-1"
-		>
-			{
-				friends.map((link) => (
-					<a class="px-4 py-2 text-[9px] sm:py-0 sm:hover:text-textColor sm:hover:underline" href={link.url} target="_blank" rel="noopener noreferrer">
-						{link.name}
-					</a>
-				))
-			}
-		</nav>
-		<!-- 添加不蒜子脚本 -->
-		<script is:inline src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-		<script is:inline>
-			document.addEventListener('DOMContentLoaded', () => {
-				// 网站建立时间，格式：年-月-日T时:分:秒Z
-				const startTime = new Date('2018-07-18T00:00:00Z');
-				const uptimeElement = document.getElementById('uptime');
-				function formatTime(seconds) {
-					const days = Math.floor(seconds / (24 * 60 * 60));
-					seconds %= 24 * 60 * 60;
-					const hours = Math.floor(seconds / (60 * 60));
-					seconds %= 60 * 60;
-					const minutes = Math.floor(seconds / 60);
-					const secondsRemaining = seconds % 60;
-					return `${days} 天 ${hours.toString().padStart(2, '0')} 时 ${minutes.toString().padStart(2, '0')} 分 ${secondsRemaining.toString().padStart(2, '0')} 秒`;
-				}
-				function updateUptime() {
-					const now = new Date();
-					const seconds = Math.floor((now - startTime) / 1000);
-					uptimeElement.textContent = formatTime(seconds);
-				}
-				updateUptime();
-				setInterval(updateUptime, 1000);
-			});
-		</script>
-	</footer>
+---
+import { menuLinks, siteConfig, friends } from "@/site.config";
+---
+<footer
+  class="mt-auto flex w-full flex-col items-center justify-center gap-y-1 pb-4 pt-10 text-center align-top font-semibold text-gray-600 dark:text-gray-400"
+>
+  <div class="flex flex-col w-full gap-y-1">
+    <div class="text-center text-[9px]">
+      &copy; {siteConfig.author}
+    </div>
+    <!-- 运行时间（保持正常逻辑） -->
+    <div class="uptime-section text-center text-[9px]">
+      本站已运行: <span id="site-uptime">0秒</span>
+    </div>
+    <!-- CountAPI 统计容器：替换原不蒜子容器 -->
+    <div class="text-center text-[9px]">
+      <span>
+        访客数:<span id="count-uv">加载中...</span>人次
+      </span> | 
+      <span>
+        总访问量:<span id="count-pv">加载中...</span>次
+      </span>
+    </div>
+  </div>
+
+  <nav
+    aria-label="More on this site"
+    class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500 mt-1"
+  >
+    {
+      friends.map((link) => (
+        <a 
+          key={link.url} 
+          class="px-4 py-2 text-[9px] sm:py-0 sm:hover:text-textColor sm:hover:underline" 
+          href={link.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          {link.name}
+        </a>
+      ))
+    }
+  </nav>
+
+  <!-- 核心脚本：运行时间 + CountAPI 统计 -->
+  <script is:inline>
+    // 1. 运行时间逻辑（保持不变）
+    try {
+      document.addEventListener('DOMContentLoaded', () => {
+        const uptimeElement = document.getElementById('site-uptime');
+        const startTime = new Date('2018-07-18T00:00:00Z');
+        if (!uptimeElement) return;
+
+        function formatTime(seconds) {
+          const days = Math.floor(seconds / (24 * 60 * 60));
+          seconds %= 24 * 60 * 60;
+          const hours = Math.floor(seconds / (60 * 60));
+          seconds %= 60 * 60;
+          const minutes = Math.floor(seconds / 60);
+          const secondsRemaining = seconds % 60;
+          return `${days} 天 ${String(hours).padStart(2, '0')} 时 ${String(minutes).padStart(2, '0')} 分 ${String(secondsRemaining).padStart(2, '0')} 秒`;
+        }
+
+        function updateUptime() {
+          const now = new Date();
+          const seconds = Math.floor((now - startTime) / 1000);
+          uptimeElement.textContent = formatTime(seconds);
+        }
+
+        updateUptime();
+        setInterval(updateUptime, 1000);
+      });
+    } catch (error) {
+      console.error('运行时间脚本报错：', error);
+      document.getElementById('site-uptime').textContent = '计算失败';
+    }
+
+    // 2. CountAPI 访问统计逻辑（核心新增）
+    async function initCountAPI() {
+      // 关键：替换为你的专属 "站点ID"（建议用你的站点名/域名，如 "versior-log-site"）
+      const siteId = "versior"; 
+      // CountAPI 基础地址（稳定）
+      const baseUrl = "https://api.countapi.xyz";
+
+      // 2.1 获取总访问量（PV：每次刷新+1）
+      try {
+        const pvRes = await fetch(`${baseUrl}/hit/${siteId}/pv`);
+        const pvData = await pvRes.json();
+        document.getElementById('count-pv').textContent = pvData.value || '0';
+      } catch (error) {
+        console.error('PV统计报错：', error);
+        document.getElementById('count-pv').textContent = '--';
+      }
+
+      // 2.2 获取访客数（UV：基于浏览器本地存储，同一设备1天内只+1）
+      try {
+        const uvKey = `countapi_uv_${siteId}`;
+        const today = new Date().toISOString().split('T')[0]; // 今天日期（如 2025-10-18）
+        const storedDate = localStorage.getItem(uvKey);
+
+        // 逻辑：如果今天没记录过，才请求CountAPI增加UV
+        if (storedDate !== today) {
+          await fetch(`${baseUrl}/hit/${siteId}/uv`);
+          localStorage.setItem(uvKey, today); // 记录今天已统计
+        }
+
+        // 获取最终UV数
+        const uvRes = await fetch(`${baseUrl}/get/${siteId}/uv`);
+        const uvData = await uvRes.json();
+        document.getElementById('count-uv').textContent = uvData.value || '0';
+      } catch (error) {
+        console.error('UV统计报错：', error);
+        document.getElementById('count-uv').textContent = '--';
+      }
+    }
+
+    // 初始化CountAPI统计（DOM加载完成后执行）
+    document.addEventListener('DOMContentLoaded', initCountAPI);
+  </script>
+</footer>
