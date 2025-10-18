@@ -8,11 +8,9 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
     <div class="text-center text-[9px]">
       &copy; {siteConfig.author}
     </div>
-    <!-- 运行时间（保持正常逻辑） -->
     <div class="uptime-section text-center text-[9px]">
       本站已运行: <span id="site-uptime">0秒</span>
     </div>
-    <!-- CountAPI 统计容器：替换原不蒜子容器 -->
     <div class="text-center text-[9px]">
       <span>
         访客数:<span id="count-uv">加载中...</span>人次
@@ -42,7 +40,6 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
     }
   </nav>
 
-  <!-- 核心脚本：运行时间 + CountAPI 统计 -->
   <script is:inline>
     // 1. 运行时间逻辑（保持不变）
     try {
@@ -75,46 +72,79 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
       document.getElementById('site-uptime').textContent = '计算失败';
     }
 
-    // 2. CountAPI 访问统计逻辑（核心新增）
+    // 2. CountAPI 统计（强化版）
     async function initCountAPI() {
-      // 关键：替换为你的专属 "站点ID"（建议用你的站点名/域名，如 "versior-log-site"）
+      // 替换为你的专属ID（必须改！只能包含字母、数字、-、_）
       const siteId = "versior"; 
-      // CountAPI 基础地址（稳定）
-      const baseUrl = "https://api.countapi.xyz";
+      // 备用API地址（多个地址提高成功率）
+      const apiUrls = [
+        "https://countapi.xyz",      // 主地址（无api前缀，更稳定）
+        "https://api.countapi.xyz"   // 备用地址
+      ];
 
-      // 2.1 获取总访问量（PV：每次刷新+1）
-      try {
-        const pvRes = await fetch(`${baseUrl}/hit/${siteId}/pv`);
-        const pvData = await pvRes.json();
-        document.getElementById('count-pv').textContent = pvData.value || '0';
-      } catch (error) {
-        console.error('PV统计报错：', error);
-        document.getElementById('count-pv').textContent = '--';
+      // 工具函数：尝试所有API地址，返回第一个成功的响应
+      async function tryFetch(path) {
+        for (const baseUrl of apiUrls) {
+          try {
+            const res = await fetch(`${baseUrl}${path}`);
+            if (!res.ok) throw new Error(`API返回错误：${res.status}`);
+            return await res.json();
+          } catch (error) {
+            console.log(`地址 ${baseUrl} 失败：`, error.message);
+            continue; // 尝试下一个地址
+          }
+        }
+        throw new Error("所有API地址均失败");
       }
 
-      // 2.2 获取访客数（UV：基于浏览器本地存储，同一设备1天内只+1）
+      // 2.1 总访问量（PV）：优先用API，失败则用本地存储
+      const pvElement = document.getElementById('count-pv');
       try {
-        const uvKey = `countapi_uv_${siteId}`;
-        const today = new Date().toISOString().split('T')[0]; // 今天日期（如 2025-10-18）
+        const pvData = await tryFetch(`/hit/${siteId}/pv`);
+        pvElement.textContent = pvData.value || '0';
+        localStorage.setItem('local_pv', pvData.value); // 同步到本地
+      } catch (error) {
+        console.error('PV统计失败：', error);
+        // 用本地存储的历史数据（无则显示1）
+        const localPv = localStorage.getItem('local_pv') || '1';
+        pvElement.textContent = localPv;
+        // 本地+1（确保刷新时增长）
+        localStorage.setItem('local_pv', String(Number(localPv) + 1));
+      }
+
+      // 2.2 访客数（UV）：优先用API，失败则用本地存储
+      const uvElement = document.getElementById('count-uv');
+      try {
+        const uvKey = `local_uv_${siteId}`;
+        const today = new Date().toISOString().split('T')[0];
         const storedDate = localStorage.getItem(uvKey);
 
-        // 逻辑：如果今天没记录过，才请求CountAPI增加UV
+        // 今天未统计过，则尝试API+1
         if (storedDate !== today) {
-          await fetch(`${baseUrl}/hit/${siteId}/uv`);
-          localStorage.setItem(uvKey, today); // 记录今天已统计
+          await tryFetch(`/hit/${siteId}/uv`);
+          localStorage.setItem(uvKey, today);
         }
 
-        // 获取最终UV数
-        const uvRes = await fetch(`${baseUrl}/get/${siteId}/uv`);
-        const uvData = await uvRes.json();
-        document.getElementById('count-uv').textContent = uvData.value || '0';
+        // 获取UV总数
+        const uvData = await tryFetch(`/get/${siteId}/uv`);
+        uvElement.textContent = uvData.value || '0';
+        localStorage.setItem('local_uv', uvData.value); // 同步到本地
       } catch (error) {
-        console.error('UV统计报错：', error);
-        document.getElementById('count-uv').textContent = '--';
+        console.error('UV统计失败：', error);
+        // 用本地存储的历史数据（无则显示1）
+        const localUv = localStorage.getItem('local_uv') || '1';
+        uvElement.textContent = localUv;
+        // 今天未统计过，则本地+1
+        const uvKey = `local_uv_${siteId}`;
+        const today = new Date().toISOString().split('T')[0];
+        if (localStorage.getItem(uvKey) !== today) {
+          localStorage.setItem('local_uv', String(Number(localUv) + 1));
+          localStorage.setItem(uvKey, today);
+        }
       }
     }
 
-    // 初始化CountAPI统计（DOM加载完成后执行）
+    // 启动统计（DOM加载后）
     document.addEventListener('DOMContentLoaded', initCountAPI);
   </script>
 </footer>
