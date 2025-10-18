@@ -8,18 +8,14 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
     <div class="text-center text-[9px]">
       &copy; {siteConfig.author}
     </div>
-    <!-- 运行时间（已正常，保留） -->
+    <!-- 运行时间 -->
     <div class="uptime-section text-center text-[9px]">
       本站已运行: <span id="site-uptime">0秒</span>
     </div>
-    <!-- 不蒜子统计容器：保留原ID，新增默认值避免空白 -->
+    <!-- 统计容器：今日访客数 + 总访问量 -->
     <div class="text-center text-[9px]">
-      <span id="busuanzi_container_site_uv">
-        访客数:<span id="busuanzi_value_site_uv">--</span>人次
-      </span> | 
-      <span id="busuanzi_container_site_pv">
-        总访问量:<span id="busuanzi_value_site_pv">--</span>次
-      </span>
+      <span>今日访客数:<span id="today-uv">--</span>人次</span> | 
+      <span>总访问量:<span id="total-pv">--</span>次</span>
     </div>
   </div>
 
@@ -42,57 +38,86 @@ import { menuLinks, siteConfig, friends } from "@/site.config";
     }
   </nav>
 
-  <!-- 1. 修复不蒜子脚本：改用备用CDN + 延迟加载，避免被拦截 -->
+  <!-- 核心脚本：合并+延迟+精简 -->
   <script is:inline>
-    // 延迟1秒加载不蒜子，避开浏览器初始拦截
-    setTimeout(() => {
-      const script = document.createElement('script');
-      // 用备用HTTPS CDN（主CDN失效时可用）
-      script.src = 'https://cdn.jsdelivr.net/gh/ibruce/busuanzi@2.3/busuanzi.pure.mini.js';
-      script.async = true;
-      // 脚本加载成功/失败的反馈
-      script.onload = () => console.log('不蒜子脚本加载成功');
-      script.onerror = () => {
-        console.error('不蒜子脚本加载失败，启用本地模拟统计');
-        // 加载失败时，用本地存储临时填充数据
-        const uv = localStorage.getItem('site_uv') || '1';
-        const pv = localStorage.getItem('site_pv') || '1';
-        document.getElementById('busuanzi_value_site_uv').textContent = uv;
-        document.getElementById('busuanzi_value_site_pv').textContent = pv;
-        // 记录总访问量（每次刷新+1）
-        localStorage.setItem('site_pv', String(Number(pv) + 1));
+    // 1. 性能优化：提前缓存DOM元素（减少重复查询）
+    const dom = {
+      uptime: document.getElementById('site-uptime'),
+      todayUV: document.getElementById('today-uv'),
+      totalPV: document.getElementById('total-pv')
+    };
+
+    // 2. 运行时间（精简逻辑，避免冗余计算）
+    if (dom.uptime) {
+      const startTime = new Date('2018-07-18T00:00:00Z');
+      const updateUptime = () => {
+        const seconds = Math.floor((new Date() - startTime) / 1000);
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        dom.uptime.textContent = `${days} 天 ${hours.toString().padStart(2, '0')} 时 ${mins.toString().padStart(2, '0')} 分 ${secs.toString().padStart(2, '0')} 秒`;
       };
-      document.body.appendChild(script);
-    }, 1000);
-
-    // 2. 运行时间脚本（已正常，保留）
-    try {
-      document.addEventListener('DOMContentLoaded', () => {
-        const uptimeElement = document.getElementById('site-uptime');
-        const startTime = new Date('2018-07-18T00:00:00Z');
-        if (!uptimeElement) return;
-
-        function formatTime(seconds) {
-          const days = Math.floor(seconds / (24 * 60 * 60));
-          seconds %= 24 * 60 * 60;
-          const hours = Math.floor(seconds / (60 * 60));
-          seconds %= 60 * 60;
-          const minutes = Math.floor(seconds / 60);
-          const secondsRemaining = seconds % 60;
-          return `${days} 天 ${String(hours).padStart(2, '0')} 时 ${String(minutes).padStart(2, '0')} 分 ${String(secondsRemaining).padStart(2, '0')} 秒`;
-        }
-
-        function updateUptime() {
-          const now = new Date();
-          const seconds = Math.floor((now - startTime) / 1000);
-          uptimeElement.textContent = formatTime(seconds);
-        }
-
-        updateUptime();
-        setInterval(updateUptime, 1000);
-      });
-    } catch (error) {
-      console.error('运行时间脚本报错：', error);
+      updateUptime();
+      setInterval(updateUptime, 1000); // 必要的定时器，无法省略
     }
+
+    // 3. 今日访客数（本地存储优化：减少读写次数）
+    const initTodayUV = () => {
+      if (!dom.todayUV) return;
+      const today = new Date().toISOString().split('T')[0];
+      const storageKey = `uv_${today}`;
+      const globalKey = `total_uv_${today}`;
+
+      // 仅在首次访问时更新存储（减少localStorage写入）
+      if (!localStorage.getItem(storageKey)) {
+        localStorage.setItem(storageKey, '1');
+        const current = localStorage.getItem(globalKey) || '0';
+        localStorage.setItem(globalKey, String(+current + 1));
+      }
+
+      // 先显示本地数据（快速响应）
+      dom.todayUV.textContent = localStorage.getItem(globalKey) || '1';
+    };
+
+    // 4. 总访问量（优先本地缓存，后同步远程）
+    const initTotalPV = () => {
+      if (!dom.totalPV) return;
+      // 先显示本地缓存（避免等待远程响应）
+      const localPV = localStorage.getItem('total_pv') || '1';
+      dom.totalPV.textContent = localPV;
+
+      // 异步加载统计脚本（非关键资源，不阻塞渲染）
+      const loadStatsScript = () => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/ibruce/busuanzi@2.3/busuanzi.pure.mini.js';
+        script.async = true; // 异步加载，不阻塞HTML解析
+        script.defer = true; // 延迟执行，等DOM就绪
+
+        // 脚本加载成功：同步远程数据（覆盖本地）
+        script.onload = () => {
+          if (window.busuanzi?.value?.site_pv) {
+            dom.totalPV.textContent = busuanzi.value.site_pv;
+            localStorage.setItem('total_pv', busuanzi.value.site_pv); // 缓存远程数据
+          }
+        };
+
+        // 脚本加载失败：仅更新本地计数（不重复写入）
+        script.onerror = () => {
+          localStorage.setItem('total_pv', String(+localPV + 1));
+        };
+
+        document.body.appendChild(script);
+      };
+
+      // 延迟加载统计脚本（等页面核心内容渲染完成）
+      requestIdleCallback(loadStatsScript, { timeout: 2000 });
+    };
+
+    // 5. 初始化入口（等DOM就绪后执行，避免提前查询）
+    document.addEventListener('DOMContentLoaded', () => {
+      initTodayUV();
+      initTotalPV();
+    });
   </script>
 </footer>
